@@ -16336,12 +16336,12 @@ div#notebook {
 <h1>Perform dispatch model/Grimsel runs<span class="tocSkip"></span></h1><p>Companion notebook #3 of 4 of the paper</p>
 <blockquote><p>M.C.Soini <em>et al.</em>, <strong>On the market displacement of incumbent grid-connected electricity storage by more efficient storage</strong>.</p>
 </blockquote>
-<p>This notebook performs model runs discussed in section 3.3 of the paper.
-Static HTML files are included with the paper's supplementary material.The analysis of the model results is performed in a separate <a href="https://github.com/mcsoini/storage_displacement_supplementary/blob/master/04_dispatch_model_analysis.ipynb">Jupyter Notebook</a>.</p>
+<p>The notebook is published as a static html file and as a Jupyter notebook file; please find the notebook file <a href="https://github.com/mcsoini/storage_displacement_supplementary/blob/master/03_dispatch_model_run.ipynb">here</a>.</p>
+<p>This notebook performs model runs discussed in section 3.3 of the paper.</p>
 <p><strong>Instructions</strong></p>
 <ul>
+<li>Install dependencies as defined in the <a href="https://github.com/mcsoini/storage_displacement_supplementary/blob/master/README.md">README</a></li>
 <li>Grimsel requires a working CPLEX installation in a default location</li>
-<li>Install dependencies as defined in the README</li>
 </ul>
 
 </div>
@@ -16364,11 +16364,12 @@ Static HTML files are included with the paper's supplementary material.The analy
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">socket</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">wrapt</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">reload</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
@@ -16422,12 +16423,10 @@ Static HTML files are included with the paper's supplementary material.The analy
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sc_out</span> <span class="o">=</span> <span class="s1">&#39;out_value_test_scenonly&#39;</span>
-<span class="n">sc_out</span> <span class="o">=</span> <span class="s1">&#39;out_value_test_all6hours&#39;</span>
-<span class="n">sc_out</span> <span class="o">=</span> <span class="s1">&#39;compare_repro&#39;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sc_out</span> <span class="o">=</span> <span class="s1">&#39;out_grimsel&#39;</span>
 </pre></div>
 
     </div>
@@ -16437,14 +16436,14 @@ Static HTML files are included with the paper's supplementary material.The analy
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Model Parameters</span>
 <span class="n">mkwargs</span> <span class="o">=</span> <span class="p">{</span>
            <span class="s1">&#39;symbolic_solver_labels&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># pyomo parameter, set to True for debugging</span>
             <span class="c1"># select constraint groups; the default objective function is skipped in order to add a custom one (see below)</span>
-           <span class="s1">&#39;constraint_groups&#39;</span><span class="p">:</span> <span class="n">MB</span><span class="o">.</span><span class="n">get_constraint_groups</span><span class="p">(</span><span class="n">excl</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ror&#39;</span><span class="p">,</span> <span class="s1">&#39;variables&#39;</span><span class="p">,</span> <span class="s1">&#39;objective&#39;</span><span class="p">]),</span>
+           <span class="s1">&#39;constraint_groups&#39;</span><span class="p">:</span> <span class="n">MB</span><span class="o">.</span><span class="n">get_constraint_groups</span><span class="p">(</span><span class="n">excl</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ror&#39;</span><span class="p">,</span> <span class="s1">&#39;objective&#39;</span><span class="p">]),</span>
            <span class="s1">&#39;nthreads&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>  <span class="c1"># CPLEX multiprocessing</span>
            <span class="s1">&#39;keepfiles&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># if True: keep temporary files</span>
            <span class="p">}</span>
@@ -16486,6 +16485,60 @@ Static HTML files are included with the paper's supplementary material.The analy
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>&gt; 11:56:04 - INFO - grimsel.core.model_base - self.slct_encar=[]
+&gt; 11:56:04 - INFO - grimsel.core.model_base - self.slct_pp_type=[]
+&gt; 11:56:04 - INFO - grimsel.core.model_base - self.slct_node=[]
+&gt; 11:56:04 - INFO - grimsel.core.model_base - self.slct_node_connect=[]
+&gt; 11:56:04 - INFO - grimsel.core.model_base - self.nhours=1
+&gt; 11:56:04 - INFO - grimsel.core.model_base - self.constraint_groups=[&#39;capacity_calculation&#39;, &#39;capacity_constraint&#39;, &#39;charging_level&#39;, &#39;chp&#39;, &#39;energy_aggregation&#39;, &#39;energy_constraint&#39;, &#39;hydro&#39;, &#39;monthly_total&#39;, &#39;ramp_rate&#39;, &#39;supply&#39;, &#39;transmission_bounds&#39;, &#39;variables&#39;, &#39;yearly_cost&#39;]
+&gt; 11:56:04 - INFO - grimsel.core.io - Output collection: compare_repro; resume loop=False
+&gt; 11:56:04 - ERROR - grimsel.core.io - [Errno 2] No such file or directory: &#39;compare_repro/def_run.parq&#39;
+&gt; 11:56:04 - WARNING - grimsel.core.io - reset_parquet_file: Could not determine max_run_id ... setting to None.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+~~~~~~~~~~~~~~~   WARNING:  ~~~~~~~~~~~~~~~~
+You are about to delete existing directory compare_repro.
+The maximum run_id is None.
+
+Hit enter to proceed.
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>&gt; 11:56:04 - INFO - grimsel.core.io - Dropping parquet output directory compare_repro
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
@@ -16499,13 +16552,126 @@ Static HTML files are included with the paper's supplementary material.The analy
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">ml</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="n">to_runlevel</span><span class="o">=</span><span class="s1">&#39;input_data&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>&gt; 11:56:05 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:05 - INFO - grimsel.core.model_loop - ModelLoop.build_model: Runlevel 0: Calling method read_model_data
+&gt; 11:56:05 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to []
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table def_month  from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/def_month.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to []
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table def_week  from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/def_week.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to []
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table parameter_month  from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/parameter_month.csv
+&gt; 11:56:05 - WARNING - grimsel.core.io - Input table tm_soy does not exist. Setting model attribute df_tm_soy to None.
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to []
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table def_node  from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/def_node.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to []
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table def_pp_type  from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/def_pp_type.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to []
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table def_encar  from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/def_encar.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;nd_id&#39;, [0, 1, 2, 3, 4]), (&#39;pt_id&#39;, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table def_plant filtered by nd_id in [0, 1, 2, 3, 4], pt_id in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/def_plant.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;nd_id&#39;, [0, 1, 2, 3, 4])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table profchp filtered by nd_id in [0, 1, 2, 3, 4] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/profchp.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;nd_id&#39;, [0, 1, 2, 3, 4]), (&#39;ca_id&#39;, [0])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table node_encar filtered by nd_id in [0, 1, 2, 3, 4], ca_id in [0] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/node_encar.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;nd_id&#39;, [0, 1, 2, 3, 4]), (&#39;ca_id&#39;, [0]), (&#39;nd_2_id&#39;, [0, 1, 2, 3, 4])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table node_connect filtered by nd_id in [0, 1, 2, 3, 4], ca_id in [0], nd_2_id in [0, 1, 2, 3, 4] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/node_connect.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;nd_id&#39;, [0, 1, 2, 3, 4]), (&#39;ca_id&#39;, [0])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table fuel_node_encar_scenarios filtered by nd_id in [0, 1, 2, 3, 4], ca_id in [0] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/fuel_node_encar_scenarios.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;nd_id&#39;, [0, 1, 2, 3, 4]), (&#39;ca_id&#39;, [0])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table fuel_node_encar filtered by nd_id in [0, 1, 2, 3, 4], ca_id in [0] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/fuel_node_encar.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;pp_id&#39;, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table profinflow filtered by pp_id in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/profinflow.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;pp_id&#39;, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76]), (&#39;ca_id&#39;, [0])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table plant_encar filtered by pp_id in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76], ca_id in [0] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/plant_encar.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;pp_id&#39;, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table hydro filtered by pp_id in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/hydro.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;fl_id&#39;, [12, 10, 2, 0, 1, 5, 4, 8, 3, 6, 7, 15, 13, 11, 18, 23, 19])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table def_fuel filtered by fl_id in [12, 10, 2, 0, 1, 5, 4, 8, 3, 6, 7, 15, 13, 11, 18, 23, 19] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/def_fuel.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;pp_id&#39;, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table plant_month filtered by pp_id in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/plant_month.csv
+&gt; 11:56:05 - WARNING - grimsel.core.io - Input table plant_week does not exist. Setting model attribute df_plant_week to None.
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;fl_id&#39;, [12, 10, 2, 0, 1, 5, 4, 8, 3, 6, 7, 15, 13, 11, 18, 23, 19]), (&#39;nd_id&#39;, [0, 1, 2, 3, 4]), (&#39;ca_id&#39;, [0])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table fuel_node_encar filtered by fl_id in [12, 10, 2, 0, 1, 5, 4, 8, 3, 6, 7, 15, 13, 11, 18, 23, 19], nd_id in [0, 1, 2, 3, 4], ca_id in [0] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/fuel_node_encar.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;pp_id&#39;, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76]), (&#39;ca_id&#39;, [0])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table plant_encar_scenarios filtered by pp_id in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76], ca_id in [0] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/plant_encar_scenarios.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;fl_id&#39;, [12, 10, 2, 0, 1, 5, 4, 8, 3, 6, 7, 15, 13, 11, 18, 23, 19]), (&#39;nd_id&#39;, [0, 1, 2, 3, 4]), (&#39;ca_id&#39;, [0])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table fuel_node_encar_scenarios filtered by fl_id in [12, 10, 2, 0, 1, 5, 4, 8, 3, 6, 7, 15, 13, 11, 18, 23, 19], nd_id in [0, 1, 2, 3, 4], ca_id in [0] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/fuel_node_encar_scenarios.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;supply_pf_id&#39;, [25.0, 26.0, 29.0, 27.0, 28.0, 31.0, 30.0, 34.0, 32.0, 33.0, 35.0, 36.0, 37.0, 38.0, 41.0, 39.0, 40.0])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table profsupply filtered by supply_pf_id in [25.0, 26.0, 29.0, 27.0, 28.0, 31.0, 30.0, 34.0, 32.0, 33.0, 35.0, 36.0, 37.0, 38.0, 41.0, 39.0, 40.0] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/profsupply.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;dmnd_pf_id&#39;, [3, 0, 1, 2, 4])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table profdmnd filtered by dmnd_pf_id in [3, 0, 1, 2, 4] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/profdmnd.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;price_pf_id&#39;, [])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table profprice filtered by  from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/profprice.csv
+&gt; 11:56:05 - DEBUG - grimsel.core.io - Done reading, filtering according to [(&#39;pf_id&#39;, [3, 0, 1, 2, 4, 25.0, 26.0, 29.0, 27.0, 28.0, 31.0, 30.0, 34.0, 32.0, 33.0, 35.0, 36.0, 37.0, 38.0, 41.0, 39.0, 40.0])]
+&gt; 11:56:05 - INFO - grimsel.core.io - Reading input table def_profile filtered by pf_id in [3, 0, 1, 2, 4, 25.0, 26.0, 29.0, 27.0, 28.0, 31.0, 30.0, 34.0, 32.0, 33.0, 35.0, 36.0, 37.0, 38.0, 41.0, 39.0, 40.0] from  from /home/martinsoini/STORAGE_VALUE/PYTHON/ALL/storage_displacement_supplementary/MODEL_INPUT_CSV_FILES/def_profile.csv
+&gt; 11:56:05 - INFO - grimsel.core.io - Ex-post filtering of DataFrame df_parameter_month:
+&gt; 11:56:05 - INFO - grimsel.core.io - 	Set nd_id is in (0, 1, 2, 3, 4)
+&gt; 11:56:05 - INFO - grimsel.core.io - 	Set fl_id is in (0, 2, 13)
+&gt; 11:56:05 - INFO - grimsel.core.io - 	Set pp_id is in (24, 37, 38, 39)
+&gt; 11:56:05 - INFO - grimsel.core.io - 	Set ca_id is in (0)
+&gt; 11:56:05 - INFO - grimsel.core.io - ############################################################
+&gt; 11:56:05 - INFO - grimsel.core.autocomplete - Autocompletion df_def_pp_type in AutoCompletePpType
+&gt; 11:56:05 - INFO - grimsel.core.autocomplete - done. Added: TRNS, DMND, CONS_EL
+&gt; 11:56:05 - INFO - grimsel.core.autocomplete - Autocompletion df_def_fuel in AutoCompleteFuelTrns
+&gt; 11:56:05 - INFO - grimsel.core.autocomplete - done. Added: exchange
+&gt; 11:56:05 - INFO - grimsel.core.autocomplete - Autocompletion df_def_fuel in AutoCompleteFuelDmnd
+&gt; 11:56:05 - INFO - grimsel.core.autocomplete - done. Added: dmnd
+&gt; 11:56:05 - INFO - grimsel.core.autocomplete - Autocompletion df_def_plant in AutoCompletePlantTrns
+&gt; 11:56:05 - INFO - grimsel.core.autocomplete - done. Added: AT0_TRNS, DE0_TRNS, IT0_TRNS, AT0_TRNS, DE0_TRNS, FR0_TRNS, FR0_TRNS, IT0_TRNS, CH0_TRNS
+&gt; 11:56:05 - INFO - grimsel.core.autocomplete - Autocompletion df_def_plant in AutoCompletePlantDmnd
+&gt; 11:56:05 - INFO - grimsel.core.autocomplete - done. Added: AT0_DMND, CH0_DMND, DE0_DMND, FR0_DMND, IT0_DMND
+&gt; 11:56:05 - INFO - grimsel.core.autocomplete - Autocompletion df_def_plant in AutoCompletePlantCons
+&gt; 11:56:05 - INFO - grimsel.core.autocomplete - nothing added.
+&gt; 11:56:05 - INFO - grimsel.core.autocomplete - Autocompletion df_plant_encar in AutoCompletePpCaFlex
+&gt; 11:56:05 - INFO - grimsel.core.autocomplete - nothing added.
+&gt; 11:56:05 - INFO - grimsel.core.io - ############################################################
+&gt; 11:56:05 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:05 - INFO - grimsel.core.model_loop - ModelLoop.build_model: Runlevel 1: Calling method init_maps
+&gt; 11:56:05 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:05 - DEBUG - grimsel.auxiliary.maps - node, nd
+&gt; 11:56:05 - DEBUG - grimsel.auxiliary.maps - pp_type, pt
+&gt; 11:56:05 - DEBUG - grimsel.auxiliary.maps - encar, ca
+&gt; 11:56:05 - DEBUG - grimsel.auxiliary.maps - plant, pp
+&gt; 11:56:05 - DEBUG - grimsel.auxiliary.maps - fuel, fl
+&gt; 11:56:05 - DEBUG - grimsel.auxiliary.maps - profile, pf
+&gt; 11:56:05 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:05 - INFO - grimsel.core.model_loop - ModelLoop.build_model: Runlevel 2: Calling method map_to_time_res
+&gt; 11:56:05 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:05 - DEBUG - grimsel.core.model_base - Generating nhours dictionary for nhours=1 with type &lt;class &#39;int&#39;&gt;
+&gt; 11:56:05 - INFO - grimsel.auxiliary.timemap - Generating time map with freq=1 nhours=1 from 2015-1-1 00:00 to 2015-12-31 23:59
+&gt; 11:56:05 - WARNING - grimsel.auxiliary.timemap - TimeMap (5440860199031862790) exists. Reading time map from module dict.
+&gt; 11:56:05 - WARNING - grimsel.auxiliary.timemap - TimeMap (5440860199031862790) exists. Reading time map from module dict.
+&gt; 11:56:14 - INFO - grimsel.core.model_base - Averaging df_profdmnd; nhours=1.
+&gt; 11:56:14 - INFO - grimsel.core.model_base - Averaging df_profinflow; nhours=1.
+&gt; 11:56:14 - INFO - grimsel.core.model_base - Averaging df_profsupply; nhours=1.
+&gt; 11:56:14 - INFO - grimsel.core.model_base - Averaging df_profchp; nhours=1.
+&gt; 11:56:14 - INFO - grimsel.core.model_base - Averaging df_profpricesll; nhours=1.
+&gt; 11:56:14 - INFO - grimsel.core.model_base - Averaging df_profpricebuy; nhours=1.
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -16531,7 +16697,7 @@ Static HTML files are included with the paper's supplementary material.The analy
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_gl</span> <span class="o">=</span> <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">df_node_encar</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;dmnd_pf_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">grid_losses</span>
@@ -16564,7 +16730,7 @@ Static HTML files are included with the paper's supplementary material.The analy
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Set PHS efficiency to 75% consistently in all countries</span>
@@ -16589,13 +16755,314 @@ Static HTML files are included with the paper's supplementary material.The analy
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">ml</span><span class="o">.</span><span class="n">build_model</span><span class="p">()</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>&gt; 11:56:14 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:14 - INFO - grimsel.core.model_loop - ModelLoop.build_model: Runlevel 3: Calling method write_runtime_tables
+&gt; 11:56:14 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:14 - INFO - grimsel.core.io - Writing input table node_encar to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table fuel_node_encar_scenarios to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table def_month to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table def_pp_type to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table def_encar to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table def_node to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table def_fuel to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table parameter_month to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table plant_encar_scenarios to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table hydro to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table node_connect to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table def_profile to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table def_plant to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table fuel_node_encar to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table plant_month to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table def_week to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing input table plant_encar to fastparquet output: compare_repro.
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing runtime table tm_soy
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing runtime table hoy_soy
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing runtime table tm_soy_full
+&gt; 11:56:15 - INFO - grimsel.core.io - Writing runtime table sy_min_all
+&gt; 11:56:15 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:15 - INFO - grimsel.core.model_loop - ModelLoop.build_model: Runlevel 4: Calling method get_setlst
+&gt; 11:56:15 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:15 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:15 - INFO - grimsel.core.model_loop - ModelLoop.build_model: Runlevel 5: Calling method define_sets
+&gt; 11:56:15 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:15 - INFO - grimsel.core.sets - Defining basic sets for ppall
+&gt; 11:56:15 - INFO - grimsel.core.sets - Defining basic sets for pp
+&gt; 11:56:15 - INFO - grimsel.core.sets - Defining basic sets for st
+&gt; 11:56:15 - INFO - grimsel.core.sets - Defining basic sets for pr
+&gt; 11:56:15 - INFO - grimsel.core.sets - Defining basic sets for ror
+&gt; 11:56:15 - INFO - grimsel.core.sets - Defining basic sets for lin
+&gt; 11:56:15 - INFO - grimsel.core.sets - Defining basic sets for hyrs
+&gt; 11:56:15 - INFO - grimsel.core.sets - Defining basic sets for chp
+&gt; 11:56:15 - INFO - grimsel.core.sets - Defining basic sets for add
+&gt; 11:56:15 - INFO - grimsel.core.sets - Defining basic sets for rem
+&gt; 11:56:15 - INFO - grimsel.core.sets - Defining basic sets for curt
+&gt; 11:56:15 - INFO - grimsel.core.sets - Defining basic sets for sll
+&gt; 11:56:15 - INFO - grimsel.core.sets - Defining basic sets for rp
+&gt; 11:56:17 - INFO - grimsel.core.sets - Defining set sy_ppall_ca
+&gt; 11:56:20 - INFO - grimsel.core.sets - Defining set sy_rp_ca
+&gt; 11:56:22 - INFO - grimsel.core.sets - Defining set sy_st_ca
+&gt; 11:56:23 - INFO - grimsel.core.sets - Defining set sy_hyrs_ca
+&gt; 11:56:23 - INFO - grimsel.core.sets - Defining set sy_pr_ca
+&gt; 11:56:24 - INFO - grimsel.core.sets - Defining set sy_pp_ca
+&gt; 11:56:25 - INFO - grimsel.core.sets - Defining set sy_chp_ca
+&gt; 11:56:26 - INFO - grimsel.core.sets - Defining set sy_ror_ca
+&gt; 11:56:26 - INFO - grimsel.core.sets - Defining set sy_lin_ca
+&gt; 11:56:27 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:27 - INFO - grimsel.core.model_loop - ModelLoop.build_model: Runlevel 6: Calling method add_parameters
+&gt; 11:56:27 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:27 - INFO - grimsel.core.parameters - Assigning parameter dmnd ...
+&gt; 11:56:29 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:29 - INFO - grimsel.core.parameters - Assigning parameter supprof ...
+&gt; 11:56:30 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:30 - INFO - grimsel.core.parameters - Assigning parameter chpprof ...
+&gt; 11:56:31 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:31 - INFO - grimsel.core.parameters - Assigning parameter inflowprof ...
+&gt; 11:56:31 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:31 - INFO - grimsel.core.parameters - Assigning parameter pricebuyprof ...
+&gt; 11:56:31 - WARNING - grimsel.core.model_base - ... failed: set(s) [&#39;pricebuy_pf&#39;] is/are empty or None.
+&gt; 11:56:31 - INFO - grimsel.core.parameters - Assigning parameter pricesllprof ...
+&gt; 11:56:31 - WARNING - grimsel.core.model_base - ... failed: set(s) [&#39;pricesll_pf&#39;] is/are empty or None.
+&gt; 11:56:31 - INFO - grimsel.core.parameters - Assigning parameter min_erg_mt_out_share ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter max_erg_mt_in_share ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter min_erg_share ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter weight ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter grid_losses ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter cap_trme_leg ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter cap_trmi_leg ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter vc_ramp ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter pp_eff ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter cf_max ...
+&gt; 11:56:32 - WARNING - grimsel.core.parameters -  column doesn&#39;t exist but default value provided...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter erg_chp ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter erg_inp ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter vc_fl ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Applying monthly factors to parameter vc_fl
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter factor_lin_0 ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter factor_lin_1 ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter price_co2 ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Applying monthly factors to parameter price_co2
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter nd_weight ...
+&gt; 11:56:32 - WARNING - grimsel.core.parameters -  column doesn&#39;t exist but default value provided...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter co2_int ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter cap_pwr_leg ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter vc_om ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter fc_om ...
+&gt; 11:56:32 - WARNING - grimsel.core.parameters -  column doesn&#39;t exist but default value provided...
+&gt; 11:56:32 - WARNING - grimsel.core.model_base - ... failed: set(s) [&#39;add&#39;] is/are empty or None.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter fc_cp_ann ...
+&gt; 11:56:32 - WARNING - grimsel.core.parameters -  column doesn&#39;t exist but default value provided...
+&gt; 11:56:32 - WARNING - grimsel.core.model_base - ... failed: set(s) [&#39;add&#39;] is/are empty or None.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter pwr_pot ...
+&gt; 11:56:32 - WARNING - grimsel.core.parameters -  column doesn&#39;t exist but default value provided...
+&gt; 11:56:32 - WARNING - grimsel.core.model_base - ... failed: set(s) [&#39;add&#39;] is/are empty or None.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter cap_avlb ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Applying monthly factors to parameter cap_avlb
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter st_lss_hr ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter st_lss_rt ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter discharge_duration ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.parameters - Assigning parameter hyd_erg_bc ...
+&gt; 11:56:32 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:56:32 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:32 - INFO - grimsel.core.model_loop - ModelLoop.build_model: Runlevel 7: Calling method define_variables
+&gt; 11:56:32 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:32 - INFO - grimsel.core.variables - Defining variable pwr ...
+&gt; 11:56:32 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:34 - INFO - grimsel.core.variables - Defining variable pwr_ramp ...
+&gt; 11:56:34 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:36 - INFO - grimsel.core.variables - Defining variable pwr_ramp_abs ...
+&gt; 11:56:36 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:37 - INFO - grimsel.core.variables - Defining variable pwr_st_ch ...
+&gt; 11:56:37 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable erg_st ...
+&gt; 11:56:38 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable trm ...
+&gt; 11:56:38 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable erg_mt ...
+&gt; 11:56:38 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable erg_fl_yr ...
+&gt; 11:56:38 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable erg_yr ...
+&gt; 11:56:38 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable pwr_ramp_yr ...
+&gt; 11:56:38 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable vc_fl_pp_yr ...
+&gt; 11:56:38 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable vc_om_pp_yr ...
+&gt; 11:56:38 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable fc_om_pp_yr ...
+&gt; 11:56:38 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable fc_cp_pp_yr ...
+&gt; 11:56:38 - WARNING - grimsel.core.model_base - ... failed: set(s) [&#39;add_ca&#39;] is/are empty or None.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable vc_co2_pp_yr ...
+&gt; 11:56:38 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable vc_ramp_yr ...
+&gt; 11:56:38 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable cap_pwr_tot ...
+&gt; 11:56:38 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable cap_pwr_new ...
+&gt; 11:56:38 - WARNING - grimsel.core.model_base - ... failed: set(s) [&#39;add_ca&#39;] is/are empty or None.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable cap_pwr_rem ...
+&gt; 11:56:38 - WARNING - grimsel.core.model_base - ... failed: set(s) [&#39;rem_ca&#39;] is/are empty or None.
+&gt; 11:56:38 - INFO - grimsel.core.variables - Defining variable cap_erg_tot ...
+&gt; 11:56:38 - INFO - grimsel.core.variables - ... ok.
+&gt; 11:56:38 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:38 - INFO - grimsel.core.model_loop - ModelLoop.build_model: Runlevel 8: Calling method add_all_constraints
+&gt; 11:56:38 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:56:38 - INFO - grimsel.core.model_base - ##### Calling constraint group RAMP_RATE
+&gt; 11:56:38 - INFO - grimsel.core.constraints - Adding constraint calc_ramp_rate: Ramp rates are power output differences..
+&gt; 11:56:51 - INFO - grimsel.core.constraints - Adding constraint ramp_rate_abs_pos: Standard LP absolute value constraints..
+&gt; 11:56:58 - INFO - grimsel.core.constraints - Adding constraint ramp_rate_abs_neg: Standard LP absolute value constraints..
+&gt; 11:57:08 - INFO - grimsel.core.model_base - ##### Calling constraint group ENERGY_CONSTRAINT
+&gt; 11:57:08 - INFO - grimsel.core.constraints - Adding constraint pp_max_fuel: Constrain energy produced from certain fuels..
+&gt; 11:57:08 - INFO - grimsel.core.model_base - ##### Calling constraint group TRANSMISSION_BOUNDS
+&gt; 11:57:09 - INFO - grimsel.core.model_base - ##### Calling constraint group YEARLY_COST
+&gt; 11:57:09 - INFO - grimsel.core.constraints - Adding constraint calc_vc_fl_pp: Yearly fuel cost calculation (constant supply curve plants)..
+&gt; 11:57:15 - INFO - grimsel.core.constraints - Adding constraint calc_vc_om_pp: Yearly variable O&amp;M cost calculation rule..
+&gt; 11:57:15 - INFO - grimsel.core.constraints - Adding constraint calc_vc_co2_pp: Yearly emission ncost calculation (constant supply curves)..
+&gt; 11:57:20 - INFO - grimsel.core.constraints - Adding constraint calc_vc_ramp: Yearly ramping variable cost calculation rule..
+&gt; 11:57:20 - INFO - grimsel.core.constraints - Adding constraint calc_fc_cp: Fixed capital cost calculation rule.
+&gt; 11:57:20 - INFO - grimsel.core.model_base - ##### Calling constraint group VARIABLES
+&gt; 11:57:20 - INFO - grimsel.core.constraints - Adding constraint variables_prof:  Produced power equal output profile .
+&gt; 11:57:23 - INFO - grimsel.core.model_base - ##### Calling constraint group HYDRO
+&gt; 11:57:23 - INFO - grimsel.core.constraints - Adding constraint hy_reservoir_boundary_conditions: Reservoirs stored energy boundary conditions..
+&gt; 11:57:23 - INFO - grimsel.core.constraints - Adding constraint hy_month_min: Reservoirs minimum monthlyl power production..
+&gt; 11:57:23 - INFO - grimsel.core.constraints - Adding constraint hy_erg_min: Reservoirs minimum filling level..
+&gt; 11:57:24 - INFO - grimsel.core.model_base - ##### Calling constraint group CAPACITY_CONSTRAINT
+&gt; 11:57:24 - INFO - grimsel.core.constraints - Adding constraint ppst_capac:  Produced power must be less than capacity. .
+&gt; 11:57:39 - INFO - grimsel.core.constraints - Adding constraint st_chg_capac:  Charging power must be less than capacity. .
+&gt; 11:57:40 - INFO - grimsel.core.constraints - Adding constraint st_erg_capac:  Stored energy must be less than energy capacity. .
+&gt; 11:57:42 - INFO - grimsel.core.constraints - Adding constraint pwr_pot_add:  Capcity added + legacy must be less than potential capacity .
+&gt; 11:57:42 - INFO - grimsel.core.model_base - ##### Calling constraint group ENERGY_AGGREGATION
+&gt; 11:57:42 - INFO - grimsel.core.constraints - Adding constraint yearly_energy:  Sets variable erg_yr for fuel-consuming plants. .
+&gt; 11:57:45 - INFO - grimsel.core.constraints - Adding constraint yearly_ramping:  Yearly ramping in MW/yrm, absolute aggregated up and down. .
+&gt; 11:57:47 - INFO - grimsel.core.constraints - Adding constraint yearly_fuel_cons:  Fuel consumed per plant and output energy carrier. .
+&gt; 11:57:47 - INFO - grimsel.core.model_base - ##### Calling constraint group CHP
+&gt; 11:57:47 - INFO - grimsel.core.constraints - Adding constraint chp_prof: Produced power greater than CHP output profile..
+&gt; 11:57:49 - INFO - grimsel.core.model_base - ##### Calling constraint group CHARGING_LEVEL
+&gt; 11:57:49 - INFO - grimsel.core.constraints - Adding constraint erg_store_level:  Charging state for storage and hydro. .
+&gt; 11:58:00 - INFO - grimsel.core.model_base - ##### Calling constraint group MONTHLY_TOTAL
+&gt; 11:58:00 - INFO - grimsel.core.constraints - Adding constraint monthly_totals: Calculate monthly total production (hydro only). .
+&gt; 11:58:00 - INFO - grimsel.core.model_base - ##### Calling constraint group CAPACITY_CALCULATION
+&gt; 11:58:00 - INFO - grimsel.core.constraints - Adding constraint calc_cap_pwr_tot: Calculate total power capacity (leg + add - rem)..
+&gt; 11:58:00 - INFO - grimsel.core.constraints - Adding constraint calc_cap_erg_tot: Calculate total energy capacity from total power capacity..
+&gt; 11:58:00 - INFO - grimsel.core.model_base - ##### Calling constraint group SUPPLY
+&gt; 11:58:00 - INFO - grimsel.core.constraints - Adding constraint supply:  Balance supply/demand .
+&gt; 11:58:17 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:58:17 - INFO - grimsel.core.model_loop - ModelLoop.build_model: Runlevel 9: Calling method init_solver
+&gt; 11:58:17 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:58:17 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:58:17 - INFO - grimsel.core.model_loop - ModelLoop.build_model: Runlevel 10: Calling method init_output_tables
+&gt; 11:58:17 - INFO - grimsel.core.model_loop - %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component pwr to dict_comp_obj
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component dmnd_flex does not exist... skipping init CompIO.
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component pwr_st_ch to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component erg_st to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component erg_mt to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component erg_yr to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component erg_fl_yr to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component pwr_ramp_yr to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component vc_fl_pp_yr to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component vc_ramp_yr to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component vc_co2_pp_yr to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component vc_om_pp_yr to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component fc_om_pp_yr to dict_comp_obj
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component fc_cp_pp_yr does not exist... skipping init CompIO.
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component fc_dc_pp_yr does not exist... skipping init CompIO.
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component cap_pwr_rem does not exist... skipping init CompIO.
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component cap_pwr_tot to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component cap_erg_tot to dict_comp_obj
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component cap_pwr_new does not exist... skipping init CompIO.
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component erg_ch_yr does not exist... skipping init CompIO.
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component trm to dict_comp_obj
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component erg_trm_rv_yr does not exist... skipping init CompIO.
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component erg_trm_sd_yr does not exist... skipping init CompIO.
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component share_ws_set does not exist... skipping init CompIO.
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component price_co2 to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component co2_int to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component cap_pwr_leg to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component cap_avlb to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component cap_trme_leg to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component cap_trmi_leg to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component cf_max to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component grid_losses to dict_comp_obj
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component erg_max does not exist... skipping init CompIO.
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component hyd_pwr_in_mt_max does not exist... skipping init CompIO.
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component hyd_pwr_out_mt_min does not exist... skipping init CompIO.
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component vc_fl to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component nd_weight to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component factor_lin_0 to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component factor_lin_1 to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component vc_om to dict_comp_obj
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component fc_om does not exist... skipping init CompIO.
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component fc_dc does not exist... skipping init CompIO.
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component fc_cp_ann does not exist... skipping init CompIO.
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component ca_share_min does not exist... skipping init CompIO.
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component ca_share_max does not exist... skipping init CompIO.
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component pp_eff to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component vc_ramp to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component st_lss_hr to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component st_lss_rt to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component discharge_duration to dict_comp_obj
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component hyd_erg_min does not exist... skipping init CompIO.
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component inflowprof to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component chpprof to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component supprof to dict_comp_obj
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component pricesllprof does not exist... skipping init CompIO.
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component pricebuyprof does not exist... skipping init CompIO.
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component week_ror_output does not exist... skipping init CompIO.
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component dmnd to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component erg_inp to dict_comp_obj
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component erg_chp to dict_comp_obj
+&gt; 11:58:17 - WARNING - grimsel.core.io - Component capchnge_max does not exist... skipping init CompIO.
+&gt; 11:58:17 - DEBUG - grimsel.core.io - Adding component supply to dict_comp_obj
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -16612,7 +17079,7 @@ Static HTML files are included with the paper's supplementary material.The analy
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">df_plant_encar</span><span class="p">[</span><span class="s1">&#39;ec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
@@ -16669,6 +17136,26 @@ Static HTML files are included with the paper's supplementary material.The analy
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>&gt; 11:58:17 - INFO - grimsel.core.parameters - Assigning parameter ec ...
+&gt; 11:58:17 - INFO - grimsel.core.parameters -  ok.
+&gt; 11:58:17 - INFO - grimsel.core.constraints - Adding objective objective_quad: None.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
@@ -16679,12 +17166,10 @@ Static HTML files are included with the paper's supplementary material.The analy
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">wrapt</span>
-
-<span class="k">class</span> <span class="nc">ModelLoopModifier</span><span class="p">():</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">ModelLoopModifier</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    The purpose of this class is to modify the parameters of the BaseModel</span>
 <span class="sd">    objects in dependence on the current run_id.</span>
@@ -16954,19 +17439,6 @@ Static HTML files are included with the paper's supplementary material.The analy
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">run_model</span><span class="p">(</span><span class="n">run_id</span><span class="p">):</span>
 
     <span class="n">mlm</span> <span class="o">=</span> <span class="n">ModelLoopModifier</span><span class="p">(</span><span class="n">ml</span><span class="p">)</span>
@@ -16975,12 +17447,6 @@ Static HTML files are included with the paper's supplementary material.The analy
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;reset_parameters&#39;</span><span class="p">)</span>
     <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">reset_all_parameters</span><span class="p">()</span>
-    <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">add_transmission_bounds_rules</span><span class="p">()</span>
-    <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">supply</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span>
-    <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">erg_store_level</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span>
-    <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">st_erg_capac</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span>
-    <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">ppst_capac</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span>
-    <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">unfix_all_vars</span><span class="p">()</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;select_frozen_params&#39;</span><span class="p">)</span>
     <span class="n">slct_fz</span> <span class="o">=</span> <span class="n">mlm</span><span class="o">.</span><span class="n">select_frozen_params</span><span class="p">(</span><span class="n">dict_fz</span><span class="o">=</span><span class="n">dict_fz</span><span class="p">)</span>
@@ -16988,44 +17454,17 @@ Static HTML files are included with the paper's supplementary material.The analy
     <span class="n">mlm</span><span class="o">.</span><span class="n">set_future_year</span><span class="p">(</span><span class="n">dict_fy</span><span class="o">=</span><span class="n">dict_fy</span><span class="p">,</span> <span class="n">slct_fz</span><span class="o">=</span><span class="n">slct_fz</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;select_new_storage_capacity&#39;</span><span class="p">)</span>
     <span class="n">mlm</span><span class="o">.</span><span class="n">select_new_storage_capacity</span><span class="p">(</span><span class="n">dict_st</span><span class="o">=</span><span class="n">dict_st</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;select_storage_preference&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;select_storage_energy_cost&#39;</span><span class="p">)</span>
     <span class="n">mlm</span><span class="o">.</span><span class="n">select_storage_energy_cost</span><span class="p">(</span><span class="n">dict_ec</span><span class="o">=</span><span class="n">dict_ec</span><span class="p">)</span>
 
     <span class="c1">#########################################</span>
     <span class="c1">############### RUN MODEL ###############</span>
 
-    <span class="n">df_vc_om</span> <span class="o">=</span> <span class="n">IO</span><span class="o">.</span><span class="n">param_to_df</span><span class="p">(</span><span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">vc_om</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;pp_id&#39;</span><span class="p">,</span> <span class="s1">&#39;ca_id&#39;</span><span class="p">])</span>
-    <span class="n">df_vc_om</span> <span class="o">=</span> <span class="n">df_vc_om</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">pp</span><span class="o">=</span><span class="n">df_vc_om</span><span class="o">.</span><span class="n">pp_id</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">mps</span><span class="o">.</span><span class="n">dict_pp</span><span class="p">))</span>
-    <span class="n">df_vc_om</span> <span class="o">=</span> <span class="n">df_vc_om</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_vc_om</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;SFH_.._STO&#39;</span><span class="p">)]</span>
-
-    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">df_vc_om</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;pp_id&#39;</span><span class="p">,</span> <span class="s1">&#39;ca_id&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">vc_om</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span>
-
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;fill_peaker_plants&#39;</span><span class="p">)</span>
-    <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">fill_peaker_plants</span><span class="p">(</span><span class="n">demand_factor</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-                            <span class="n">list_peak</span><span class="o">=</span><span class="p">[(</span><span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">mps</span><span class="o">.</span><span class="n">dict_pp_id</span><span class="p">[</span><span class="s1">&#39;CH_GAS_LIN&#39;</span><span class="p">],</span> <span class="mi">0</span><span class="p">)]</span>
-                            <span class="k">if</span> <span class="ow">not</span> <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">setlst</span><span class="p">[</span><span class="s1">&#39;peak&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="p">[]</span>
-                            <span class="p">)</span>
+    <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">fill_peaker_plants</span><span class="p">(</span><span class="n">demand_factor</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;_limit_prof_to_cap&#39;</span><span class="p">)</span>
     <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">_limit_prof_to_cap</span><span class="p">()</span>
-
-    <span class="c1"># ~~~~~~~~~~~~~~~~~~~ VRE capacity fixed --&gt; fix corresponding pwr</span>
-
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;fixing VRE pwr&#39;</span><span class="p">)</span>
-    <span class="n">dfcap</span> <span class="o">=</span> <span class="n">IO</span><span class="o">.</span><span class="n">param_to_df</span><span class="p">(</span><span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">cap_pwr_leg</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="s1">&#39;cap&#39;</span><span class="p">})</span>
-    <span class="n">dfcap</span> <span class="o">=</span> <span class="n">dfcap</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">dfcap</span><span class="o">.</span><span class="n">pp_id</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">pr</span><span class="p">)]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;pp_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">cap</span>
-    <span class="n">dfprf</span> <span class="o">=</span> <span class="n">IO</span><span class="o">.</span><span class="n">param_to_df</span><span class="p">(</span><span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">supprof</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="s1">&#39;cf&#39;</span><span class="p">})</span>
-    <span class="n">dfprf</span> <span class="o">=</span> <span class="n">dfprf</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dfcap</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">dfcap</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
-    <span class="n">dfprf</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfprf</span><span class="o">.</span><span class="n">cf</span> <span class="o">*</span> <span class="n">dfprf</span><span class="o">.</span><span class="n">cap</span>
-
-    <span class="n">dict_val</span> <span class="o">=</span> <span class="n">dfprf</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;sy&#39;</span><span class="p">,</span> <span class="s1">&#39;pp_id&#39;</span><span class="p">,</span> <span class="s1">&#39;ca_id&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-
-    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">supprof</span><span class="p">:</span>
-        <span class="c1"># if this has been fixed by swcp already, don&#39;t touch it</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">pwr</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">fixed</span><span class="p">:</span>
-            <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">pwr</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dict_val</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-            <span class="n">ml</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">pwr</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">fix</span><span class="p">()</span>
 
     <span class="n">ml</span><span class="o">.</span><span class="n">perform_model_run</span><span class="p">()</span>
 
@@ -17038,6 +17477,24 @@ Static HTML files are included with the paper's supplementary material.The analy
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>RUNNING
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
